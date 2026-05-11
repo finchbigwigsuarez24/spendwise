@@ -6,6 +6,7 @@ import '../services/expense_service.dart';
 import '../widgets/expense_tile.dart';
 import 'add_expense_screen.dart';
 import 'edit_expense_screen.dart';
+import '../services/export_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -96,6 +97,34 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+    //wapa
+    Future<void> _exportData() async {
+    try {
+      final filePath = await ExportService.exportCurrentMonth();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Exported to: $filePath'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        final message = e is StateError
+            ? e.message
+            : 'Export failed: $e';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
@@ -111,6 +140,12 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.account_balance_wallet_outlined),
             tooltip: 'Set Monthly Budget',
             onPressed: _showBudgetDialog,
+          ),
+          //wapa
+          IconButton(
+            icon: const Icon(Icons.file_download_outlined),
+            onPressed: _exportData,
+            tooltip: 'Export Monthly Report',
           ),
           IconButton(
             icon: const Icon(Icons.info_outline),
@@ -183,8 +218,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Total Spending',
-                      style: const TextStyle(
+                  const Text('Total Spending',
+                      style: TextStyle(
                           fontSize: 14, color: Colors.black54)),
                   Text('$count expense${count == 1 ? '' : 's'}',
                       style: const TextStyle(
@@ -231,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 GestureDetector(
                   onTap: _showBudgetDialog,
-                  child: Text(
+                  child: const Text(
                     'Edit',
                     style: TextStyle(
                         fontSize: 12,

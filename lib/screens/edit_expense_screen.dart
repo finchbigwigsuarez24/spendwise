@@ -117,7 +117,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<ExpenseCategory>(
-              value: _category,
+              initialValue: _category,
               decoration: const InputDecoration(
                 labelText: 'Category',
                 border: OutlineInputBorder(),
